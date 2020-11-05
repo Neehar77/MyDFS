@@ -2,6 +2,7 @@ import rpyc
 import sys
 import os
 import logging
+from filelock import FileLock
 
 logging.basicConfig(level=logging.DEBUG)
 # LOG = logging.getLogger(__name__)
@@ -30,19 +31,22 @@ def get(master, fname):
 def put(master, source, dest):
     size = os.path.getsize(source)
     blocks = master.write(dest, size)
-    with open(source) as f:
-        for b in blocks:
-            data = f.read(master.get_block_size())
-            block_uuid = block['block_id']
-            minions = block['block_address']
+    # Lock Acquired for writing in a file
+    with FileLock("File"):
+        print("Lock acquired")
+        with open(source) as f:
+            for b in blocks:
+                data = f.read(master.get_block_size())
+                block_uuid = block['block_id']
+                minions = block['block_address']
 
-            minion = minions[0]
-            minions = minions[1:]
-            host, port = minion
+                minion = minions[0]
+                minions = minions[1:]
+                host, port = minion
 
-            con = rpyc.connect(host, port=port)
-            con.root.put(block_id, data, minions)
-
+                con = rpyc.connect(host, port=port)
+                con.root.put(block_id, data, minions)
+    # This will automatically release the lock after the completion of the with statement
 
 def main(args):
     con = rpyc.connect("localhost", port=2131)
