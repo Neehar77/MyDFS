@@ -11,4 +11,3 @@ Fault Tolerance: Resilience to node failures and data loss through replication a
 Implementation of a distributed file system architecture inspired by HDFS.
 Integration of Vue.js for an enhanced user interface, facilitating easy file management and monitoring.
 Testing conducted by deploying minion servers on Google Cloud and Amazon Web Services, with the master node running locally.
-Additional features like data processing using Hadoop and Spark for efficient distributed data processing (optional, if implemented).
